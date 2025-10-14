@@ -14,50 +14,49 @@ app = Flask(__name__)
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 # Rutas a los archivos de recursos
-ARCHIVO_EMBEDDINGS = os.path.join(BASE_DIR, 'description_embeddings.npy') 
-ARCHIVO_DATOS = os.path.join(BASE_DIR, 'netflix_titles.csv') 
+ARCHIVO_EMBEDDINGS_EN = os.path.join(BASE_DIR, 'description_embeddings.npy') 
+ARCHIVO_DATOS_EN = os.path.join(BASE_DIR, 'netflix_titles.csv') 
 
 # Rutas a los archivos de recursos es español
 ARCHIVO_EMBEDDINGS_ES = os.path.join(BASE_DIR, 'description_embeddings_es.npy') 
 ARCHIVO_DATOS_ES = os.path.join(BASE_DIR, 'netflix_titles_es.csv') 
 
-global_description_embeddings = None
-global_df_base = None
-global_model = None
+global_resources = {
+    'en': {'embeddings': None, 'df': None, 'model': None},
+    'es': {'embeddings': None, 'df': None, 'model': None}
+}
+
 
 def cargar_recursos():
-    """Carga el modelo de NLP, el DataFrame y los embeddings pre-calculados."""
-    global global_description_embeddings
-    global global_df_base
-    global global_model
-    
+    """Carga los modelos, DataFrames y embeddings pre-calculados para ambos idiomas."""
     print("Iniciando la carga de recursos...")
     
+    # Carga para el idioma INGLÉS (en)
     try:
-        # --- DIAGNÓSTICO ---
-        print(f"Buscando CSV en: {ARCHIVO_DATOS}")
-        print(f"Buscando NPY en: {ARCHIVO_EMBEDDINGS}")
-        # --- FIN DIAGNÓSTICO ---
+        global_resources['en']['model'] = SentenceTransformer('paraphrase-multilingual-mpnet-base-v2') 
+        df_en = pd.read_csv(ARCHIVO_DATOS_EN)
+        global_resources['en']['df'] = df_en.dropna(subset=['description']).reset_index(drop=True)
         
-        # Cargar el modelo de S-BERT
-        global_model = SentenceTransformer('paraphrase-multilingual-mpnet-base-v2') 
-        
-        # Cargar el DataFrame base
-        df_base = pd.read_csv(ARCHIVO_DATOS)
-        global_df_base = df_base.dropna(subset=['description']).reset_index(drop=True)
-        
-        # Cargar el archivo .npy
-        if os.path.exists(ARCHIVO_EMBEDDINGS):
-            global_description_embeddings = np.load(ARCHIVO_EMBEDDINGS)
-            print("Recursos cargados exitosamente.")
+        if os.path.exists(ARCHIVO_EMBEDDINGS_EN):
+            global_resources['en']['embeddings'] = np.load(ARCHIVO_EMBEDDINGS_EN)
+            print("Recursos en inglés cargados exitosamente.")
         else:
-            # Aquí es donde el error es más específico
-            raise FileNotFoundError(f"El archivo de embeddings no existe en: {ARCHIVO_EMBEDDINGS}")
-
+            print(f"🚨 ADVERTENCIA: El archivo de embeddings en inglés '{ARCHIVO_EMBEDDINGS_EN}' no se encontró.")
     except Exception as e:
-        # Imprimirá un error más específico
-        print(f"🚨 Error al cargar recursos: {type(e).__name__} - {e}")
-        # Retorna None en las variables globales si falla (o mejor, no las modifica)
+        print(f"🚨 Error al cargar recursos en inglés: {type(e).__name__} - {e}")
+    
+    # Carga para el idioma ESPAÑOL (es)
+    try:
+        global_resources['es']['model'] = SentenceTransformer('paraphrase-multilingual-mpnet-base-v2') 
+        df_es = pd.read_csv(ARCHIVO_DATOS_ES)
+        global_resources['es']['df'] = df_es.dropna(subset=['description']).reset_index(drop=True)
+        if os.path.exists(ARCHIVO_EMBEDDINGS_ES):
+            global_resources['es']['embeddings'] = np.load(ARCHIVO_EMBEDDINGS_ES)
+            print("Recursos en español cargados exitosamente.")
+        else:
+            print(f"🚨 ADVERTENCIA: El archivo de embeddings en español '{ARCHIVO_EMBEDDINGS_ES}' no se encontró.")
+    except Exception as e:
+        print(f"🚨 Error al cargar recursos en español: {type(e).__name__} - {e}")
 
 cargar_recursos() 
 
@@ -97,36 +96,38 @@ def index():
     consulta_buscada = ""
     num_recs = 5
     error = None
-
+    idioma_seleccionado = 'en' # Idioma predeterminado
+    
     if request.method == 'POST':
-        # 1. Obtener los inputs del formulario
         consulta_buscada = request.form.get('consulta')
+        idioma_seleccionado = request.form.get('idioma')
+        
         try:
             num_recs = int(request.form.get('num_recs'))
         except (ValueError, TypeError):
             num_recs = 5 
+        
+        # Seleccionar los recursos según el idioma
+        recursos = global_resources.get(idioma_seleccionado)
 
-        # 2. Verificar que los recursos estén cargados
-        if global_description_embeddings is None or global_df_base is None or global_model is None:
-            error = "Error al iniciar la aplicación. Asegúrate de que los archivos .npy y .csv existan."
-            
-        # 3. Llamar a la función de recomendación si no hay errores
-        if not error:
+        if recursos and recursos['embeddings'] is not None and recursos['df'] is not None and recursos['model'] is not None:
             recomendaciones = obtener_recomendaciones(
                 input_usuario=consulta_buscada,
-                df_base=global_df_base,
-                embeddings_base=global_description_embeddings,
-                model=global_model,
+                df_base=recursos['df'],
+                embeddings_base=recursos['embeddings'],
+                model=recursos['model'],
                 n_sugerencias=num_recs
             )
-        
-    # Renderiza la plantilla HTML, pasando todas las variables
+        else:
+            error = f"Error: Los recursos para el idioma '{idioma_seleccionado}' no están disponibles. Asegúrate de que los archivos existan."
+    
     return render_template(
         'index.html', 
         recomendaciones=recomendaciones,
         consulta_buscada=consulta_buscada,
         num_recs=num_recs,
-        error=error
+        error=error,
+        idioma_seleccionado=idioma_seleccionado
     )
 
 

@@ -191,6 +191,20 @@
                 <label for="consulta">Describe lo que quieres ver (Ej: "Películas de viajes en el tiempo con un toque de comedia")</label>
                 <input type="text" id="consulta" name="consulta" value="{{ consulta_buscada or '' }}" required>
             </div>
+
+            <div class="form-group">
+                <label>Idioma de Búsqueda</label>
+                <div class="radio-group">
+                    <label>
+                        <input type="radio" name="idioma" value="en" {% if idioma_seleccionado == 'en' %}checked{% endif %}> 
+                        Inglés
+                    </label>
+                    <label>
+                        <input type="radio" name="idioma" value="es" {% if idioma_seleccionado == 'es' %}checked{% endif %}> 
+                        Español
+                    </label>
+                </div>
+            </div>
             
             <div class="form-group">
                 <label for="num_recs">Número de Recomendaciones (1-10)</label>
@@ -202,7 +216,7 @@
 
         {% if recomendaciones %}
             <div class="results">
-                <h2>Resultados para "{{ consulta_buscada }}"</h2>
+                <h2>Resultados para "{{ consulta_buscada }}" en idioma "{{ idioma_seleccionado }}"</h2>
                 {% for rec in recomendaciones %}
                     <div class="suggestion">
                         <div class="title">{{ rec.title }} ({{ rec.release_year }})</div>
