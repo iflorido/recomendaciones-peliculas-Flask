@@ -7,7 +7,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 
 
 # ----------------------------------------------------------------------
-# 1. CONFIGURACIÓN Y CARGA DE RECURSOS GLOBALES (Igual que antes)
+# 1. CONFIGURACIÓN Y CARGA DE RECURSOS GLOBALES (Igual que antes).
 # ----------------------------------------------------------------------
 
 app = Flask(__name__)
