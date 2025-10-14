@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Netflix Recommender | Búsqueda Semántica</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --netflix-red: #e50914;
+            --background-dark: #141414;
+            --card-dark: #1d1d1d;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+            --border-color: #303030;
+        }
+
+        body { 
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--background-dark);
+            color: var(--text-primary);
+            max-width: 900px; 
+            margin: 0 auto; 
+            padding: 40px 20px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .container { 
+            background: transparent;
+            padding: 0;
+        }
+
+        /* --- Encabezado y Formulario --- */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        h1 span {
+            color: var(--netflix-red);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            color: var(--text-secondary);
+        }
+        
+        .form-group { 
+            margin-bottom: 25px; 
+        }
+
+        label { 
+            display: block; 
+            margin-bottom: 8px; 
+            font-weight: 600; 
+            color: var(--text-secondary);
+            font-size: 0.9em;
+        }
+
+        input[type="text"], input[type="number"] { 
+            width: 100%; 
+            padding: 15px; 
+            border: 1px solid var(--border-color); 
+            border-radius: 6px; 
+            box-sizing: border-box;
+            background-color: var(--card-dark);
+            color: var(--text-primary);
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus, input[type="number"]:focus {
+            outline: none;
+            border-color: var(--netflix-red);
+            box-shadow: 0 0 0 3px rgba(229, 9, 20, 0.25);
+        }
+
+        button { 
+            background-color: var(--netflix-red); 
+            color: white; 
+            width: 100%;
+            padding: 15px 20px; 
+            border: none; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            font-size: 1.1em;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        button:hover { 
+            background-color: #c40812;
+            transform: scale(1.02);
+        }
+
+        /* --- Resultados y Fichas --- */
+        .results { 
+            margin-top: 50px; 
+        }
+
+        .results h2 {
+            font-size: 1.8em;
+            margin-bottom: 25px;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 15px;
+        }
+        
+        .suggestion { 
+            background: var(--card-dark);
+            padding: 25px; 
+            margin-bottom: 20px; 
+            border-radius: 8px; 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            border-left: 4px solid transparent;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-left-color 0.3s ease;
+        }
+        
+        .suggestion:hover {
+            transform: translateY(-8px) scale(1.01);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+            border-left-color: var(--netflix-red);
+        }
+        
+        .title { 
+            font-size: 1.6em; 
+            font-weight: 700; 
+            margin-bottom: 10px;
+        }
+        
+        .metadata { 
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px; /* Espacio entre elementos */
+            font-size: 0.9em; 
+            color: var(--text-secondary); 
+            margin-bottom: 15px; 
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .metadata div {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .metadata strong {
+            color: #dcdcdc;
+            margin-bottom: 3px;
+        }
+        
+        .description-text p { 
+            line-height: 1.6;
+            color: #d1d1d1;
+        }
+        
+        .error { 
+            color: #f8d7da; 
+            font-weight: bold; 
+            background: #8c1c23; 
+            padding: 15px; 
+            border-radius: 6px; 
+            margin-bottom: 25px; 
+            border: 1px solid #e50914;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><span>NETFLIX</span> Recommender</h1>
+            <p>Encuentra títulos por significado con búsqueda semántica.</p>
+        </div>
+        
+        {% if error %}
+            <p class="error">{{ error }}</p>
+        {% endif %}
+
+        <form method="POST" action="/">
+            <div class="form-group">
+                <label for="consulta">Describe lo que quieres ver (Ej: "Películas de viajes en el tiempo con un toque de comedia")</label>
+                <input type="text" id="consulta" name="consulta" value="{{ consulta_buscada or '' }}" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="num_recs">Número de Recomendaciones (1-10)</label>
+                <input type="number" id="num_recs" name="num_recs" min="1" max="10" value="{{ num_recs or 5 }}" required>
+            </div>
+            
+            <button type="submit">BUSCAR RECOMENDACIONES</button>
+        </form>
+
+        {% if recomendaciones %}
+            <div class="results">
+                <h2>Resultados para "{{ consulta_buscada }}"</h2>
+                {% for rec in recomendaciones %}
+                    <div class="suggestion">
+                        <div class="title">{{ rec.title }} ({{ rec.release_year }})</div>
+                        
+                        <div class="metadata">
+                            <div>
+                                <strong>TIPO</strong>
+                                <span>{{ rec.type }}</span>
+                            </div>
+                            <div>
+                                <strong>DURACIÓN</strong>
+                                <span>{{ rec.duration | default('N/A', True) }}</span>
+                            </div>
+                            <div>
+                                <strong>DIRECTOR</strong>
+                                <span>{{ rec.director | default('N/A', True) }}</span>
+                            </div>
+                        </div>
+
+                        <div class="metadata">
+                             <div>
+                                <strong>ELENCO PRINCIPAL</strong>
+                                <span>{{ rec.cast | default('N/A', True) }}</span>
+                            </div>
+                        </div>
+
+                        <div class="description-text">
+                            <strong>SINOPSIS</strong>
+                            <p>{{ rec.description }}</p>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+    </div>
+</body>
+</html>
