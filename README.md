@@ -3,7 +3,7 @@
 ## 📝 Descripción del Proyecto
 * **Ignacio Florido**
 
-Este proyecto es un pequeño **Sistema de Recomendación basado en Contenido** utilizando el conjunto de datos de títulos de Netflix. 
+Este proyecto es un pequeño **Sistema de Recomendación basado en Contenido de Netflix** utilizando el conjunto de datos de títulos de Netflix. 
 
 El enfoque central es la **similitud semántica** (Procesamiento de Lenguaje Natural o NLP) aplicada a la columna de descripciones (`description`). El modelo permite sugerir títulos al usuario midiendo qué tan parecido es el significado de su consulta de búsqueda al de las sinopsis de las películas y series.
 
