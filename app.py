@@ -58,6 +58,10 @@ def cargar_recursos():
     except Exception as e:
         print(f"🚨 Error al cargar recursos en español: {type(e).__name__} - {e}")
 
+
+print("Archivos encontrados:")
+print(os.listdir(BASE_DIR))
+print(" Fin Archivos encontrados:")
 cargar_recursos() 
 
 # ----------------------------------------------------------------------
