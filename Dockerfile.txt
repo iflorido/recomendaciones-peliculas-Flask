@@ -1,0 +1,30 @@
+# Usa una imagen base de Python 3.11 ligera
+FROM python:3.11-slim
+
+# Instala dependencias necesarias del sistema operativo para ciertas librerías de Python (como las de análisis de datos)
+# Esto puede ser necesario para instalar pandas, numpy, etc.
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libpq-dev \
+    gcc \
+    --no-install-recommends \
+    && rm -rf /var/lib/apt/lists/*
+
+# Establece el directorio de trabajo
+WORKDIR /app
+
+# Copia los archivos de requerimientos e instálalos
+COPY requirements.txt .
+# Ejecuta pip install
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copia el resto del código de la aplicación
+COPY . .
+
+# Expone el puerto en el que se ejecuta tu aplicación
+EXPOSE 5000
+
+# Comando para ejecutar la aplicación con Gunicorn (servidor de producción)
+# Usamos el formato exec para especificar la ruta completa y evitar el error:
+# La ruta correcta para ejecutables instalados con pip es /usr/local/bin/
+CMD ["/usr/local/bin/gunicorn", "--workers", "4", "--bind", "0.0.0.0:5000", "app:app"]

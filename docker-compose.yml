@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  web:
+    # Le dice a Docker que construya la imagen usando el Dockerfile en el directorio actual
+    build: .
+    # Nombre que tendrá el contenedor, usando el nombre del proyecto
+    container_name: flask-netflix
+    # Mapea el puerto 8080 del Synology al puerto 5000 del contenedor
+    ports:
+      - "8080:5000"
+    # Reinicia el contenedor si falla
+    restart: always
+    # Opcional: Si necesitas que los cambios en el código se reflejen sin reconstruir la imagen
+    # volumes:
+    #   - ./app.py:/app/app.py
