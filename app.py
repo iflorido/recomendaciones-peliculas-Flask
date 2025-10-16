@@ -62,6 +62,13 @@ def cargar_recursos():
 print("Archivos encontrados:")
 print(os.listdir(BASE_DIR))
 print(" Fin Archivos encontrados:")
+for archivo in [ARCHIVO_EMBEDDINGS_EN, ARCHIVO_DATOS_EN, ARCHIVO_EMBEDDINGS_ES, ARCHIVO_DATOS_ES]:
+    if not os.path.exists(archivo):
+        print(f"⚠️ Archivo no encontrado: {archivo}")
+    else:
+        print(f"✅ Archivo encontrado: {archivo}")
+        
+        
 cargar_recursos() 
 
 # ----------------------------------------------------------------------
