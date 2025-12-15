@@ -3,47 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Netflix Recommender | Búsqueda Semántica</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title>Netflix Recommender | Búsqueda Semántica con IA por Ignacio Florido</title>
+    <meta name="description" content="Descubre tu próxima película favorita usando Inteligencia Artificial. Sistema de recomendación semántica que entiende el lenguaje natural. Proyecto personal de Ignacio Florido.">
+    <meta name="keywords" content="Netflix Recommender, IA, Búsqueda Semántica, NLP, Python, Flask, Ignacio Florido, Recomendador de Películas">
+    <meta name="author" content="Ignacio Florido">
+    <meta name="robots" content="index, follow">
+    
+    <link rel="canonical" href="https://peliculas.automaworks.es/">
+
+    <meta property="og:title" content="Netflix Recommender | Búsqueda Semántica IA">
+    <meta property="og:description" content="¿No sabes qué ver? Describe lo que buscas y nuestra IA te recomendará la mejor película.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://peliculas.automaworks.es/">
+    <meta property="og:site_name" content="Portfolio Ignacio Florido">
+    <meta property="og:locale" content="es_ES">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Netflix Semantic Recommender",
+      "url": "https://peliculas.automaworks.es/",
+      "description": "Sistema de recomendación de películas basado en procesamiento de lenguaje natural y búsqueda semántica.",
+      "applicationCategory": "EntertainmentApplication",
+      "operatingSystem": "All",
+      "author": {
+        "@type": "Person",
+        "name": "Ignacio Florido",
+        "url": "https://cs.iflorido.es"
+      },
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "EUR"
+      }
+    }
+    </script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
     <style>
         :root {
             --netflix-red: #e50914;
+            --netflix-red-hover: #f40612;
             --background-dark: #141414;
-            --card-dark: #1d1d1d;
+            --card-dark: #1f1f1f;
             --text-primary: #ffffff;
-            --text-secondary: #a0a0a0;
-            --border-color: #303030;
+            --text-secondary: #b3b3b3;
+            --border-color: #404040;
+            --shadow-elevation: 0 4px 15px rgba(0,0,0,0.5);
         }
 
         body { 
             font-family: 'Montserrat', sans-serif;
             background-color: var(--background-dark);
+            /* Degradado sutil para dar profundidad estilo TV */
+            background-image: radial-gradient(circle at center, #2b2b2b 0%, #141414 100%);
             color: var(--text-primary);
-            max-width: 900px; 
-            margin: 0 auto; 
-            padding: 40px 20px;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
-
-        .container { 
-            background: transparent;
+            margin: 0; 
             padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            -webkit-font-smoothing: antialiased;
         }
 
-        /* --- Encabezado y Formulario --- */
+        main {
+            flex: 1;
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            box-sizing: border-box;
+        }
+
+        /* --- Encabezado --- */
         .header {
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 50px;
+            animation: fadeIn 0.8s ease-out;
         }
 
         h1 {
-            font-size: 2.5em;
-            font-weight: 700;
-            letter-spacing: 1px;
+            font-size: 3em;
+            font-weight: 800;
+            letter-spacing: -1px;
             margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
         }
 
         h1 span {
@@ -51,207 +101,350 @@
         }
 
         .header p {
-            font-size: 1.1em;
+            font-size: 1.2em;
             color: var(--text-secondary);
+            font-weight: 500;
         }
         
+        /* --- Formulario --- */
+        .search-panel {
+            background: rgba(0,0,0,0.4);
+            padding: 30px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 40px;
+        }
+
         .form-group { 
             margin-bottom: 25px; 
         }
 
         label { 
             display: block; 
-            margin-bottom: 8px; 
+            margin-bottom: 10px; 
             font-weight: 600; 
             color: var(--text-secondary);
-            font-size: 0.9em;
+            font-size: 0.95em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         input[type="text"], input[type="number"] { 
             width: 100%; 
-            padding: 15px; 
+            padding: 18px; 
             border: 1px solid var(--border-color); 
-            border-radius: 6px; 
+            border-radius: 4px; 
             box-sizing: border-box;
-            background-color: var(--card-dark);
+            background-color: #333;
             color: var(--text-primary);
-            font-size: 1em;
+            font-size: 1.1em;
+            font-family: inherit;
             transition: all 0.3s ease;
+        }
+
+        input[type="text"]::placeholder {
+            color: #777;
         }
 
         input[type="text"]:focus, input[type="number"]:focus {
             outline: none;
+            background-color: #444;
             border-color: var(--netflix-red);
-            box-shadow: 0 0 0 3px rgba(229, 9, 20, 0.25);
+        }
+
+        /* Radio Buttons personalizados estilo Chips */
+        .radio-group {
+            display: flex;
+            gap: 15px;
+        }
+
+        .radio-group input[type="radio"] {
+            display: none;
+        }
+
+        .radio-group label {
+            background: #333;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            border: 1px solid transparent;
+            margin-bottom: 0;
+            text-transform: none;
+            color: var(--text-primary);
+            transition: all 0.2s;
+        }
+
+        .radio-group input[type="radio"]:checked + label {
+            background: var(--netflix-red);
+            font-weight: 700;
+            box-shadow: 0 0 10px rgba(229, 9, 20, 0.4);
         }
 
         button { 
             background-color: var(--netflix-red); 
             color: white; 
             width: 100%;
-            padding: 15px 20px; 
+            padding: 18px; 
             border: none; 
-            border-radius: 6px; 
+            border-radius: 4px; 
             cursor: pointer; 
-            font-size: 1.1em;
-            font-weight: 600;
-            letter-spacing: 0.5px;
+            font-size: 1.2em;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
             transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
         }
 
         button:hover { 
-            background-color: #c40812;
-            transform: scale(1.02);
-        }
-
-        /* --- Resultados y Fichas --- */
-        .results { 
-            margin-top: 50px; 
-        }
-
-        .results h2 {
-            font-size: 1.8em;
-            margin-bottom: 25px;
-            border-bottom: 2px solid var(--border-color);
-            padding-bottom: 15px;
+            background-color: var(--netflix-red-hover);
         }
         
+        button:active {
+            transform: scale(0.98);
+        }
+
+        /* --- Resultados --- */
+        .results-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+        }
+
+        .results-header h2 {
+            font-size: 1.5em;
+            margin: 0;
+            color: #fff;
+        }
+
         .suggestion { 
             background: var(--card-dark);
-            padding: 25px; 
-            margin-bottom: 20px; 
-            border-radius: 8px; 
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-            border-left: 4px solid transparent;
-            transition: transform 0.3s ease, box-shadow 0.3s ease, border-left-color 0.3s ease;
+            padding: 0; 
+            margin-bottom: 25px; 
+            border-radius: 6px; 
+            box-shadow: var(--shadow-elevation);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #2f2f2f;
         }
         
         .suggestion:hover {
-            transform: translateY(-8px) scale(1.01);
-            box-shadow: 0 8px 30px rgba(0,0,0,0.5);
-            border-left-color: var(--netflix-red);
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(0,0,0,0.6);
+            border-color: #555;
         }
-        
+
+        .suggestion-header {
+            background: linear-gradient(to right, #2a2a2a, var(--card-dark));
+            padding: 20px 25px;
+            border-bottom: 1px solid #2f2f2f;
+        }
+
         .title { 
-            font-size: 1.6em; 
+            font-size: 1.5em; 
             font-weight: 700; 
-            margin-bottom: 10px;
+            margin: 0;
+            color: #fff;
+        }
+
+        .suggestion-body {
+            padding: 25px;
         }
         
         .metadata { 
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px; /* Espacio entre elementos */
-            font-size: 0.9em; 
-            color: var(--text-secondary); 
-            margin-bottom: 15px; 
-            padding-bottom: 15px;
-            border-bottom: 1px solid var(--border-color);
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px; 
         }
 
-        .metadata div {
-            display: flex;
-            flex-direction: column;
+        .meta-item strong {
+            display: block;
+            color: #777;
+            font-size: 0.75em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
         }
 
-        .metadata strong {
-            color: #dcdcdc;
-            margin-bottom: 3px;
+        .meta-item span {
+            color: #ddd;
+            font-size: 0.95em;
+            font-weight: 500;
         }
         
-        .description-text p { 
+        .synopsis strong {
+            display: block;
+            color: var(--netflix-red);
+            font-size: 0.8em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .synopsis p { 
             line-height: 1.6;
-            color: #d1d1d1;
+            color: #cccccc;
+            margin: 0;
+            font-size: 1em;
         }
         
         .error { 
-            color: #f8d7da; 
-            font-weight: bold; 
-            background: #8c1c23; 
-            padding: 15px; 
-            border-radius: 6px; 
-            margin-bottom: 25px; 
-            border: 1px solid #e50914;
+            background: rgba(229, 9, 20, 0.1); 
+            border-left: 4px solid var(--netflix-red);
+            color: #ffcccb; 
+            padding: 20px; 
+            border-radius: 4px; 
+            margin-bottom: 30px; 
+        }
+
+        /* --- Footer --- */
+        footer {
+            margin-top: auto;
+            border-top: 1px solid var(--border-color);
+            padding: 40px 20px;
+            text-align: center;
+            background-color: rgba(0,0,0,0.3);
+        }
+
+        footer p {
+            color: #666;
+            font-size: 0.9em;
+            margin: 5px 0;
+        }
+
+        footer a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        footer a:hover {
+            color: var(--netflix-red);
+        }
+
+        .footer-brand {
+            color: #fff;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 600px) {
+            h1 { font-size: 2.2em; }
+            .radio-group { flex-direction: column; gap: 10px; }
+            .radio-group label { text-align: center; }
+            .metadata { grid-template-columns: 1fr 1fr; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
+
+    <main>
         <div class="header">
-            <h1><span>NETFLIX</span> Recommender.</h1>
-            <p>Encuentra títulos por significado con búsqueda semántica..</p>
+            <h1><span>NETFLIX</span> Semantic.</h1>
+            <p>Descubre qué ver usando Inteligencia Artificial.</p>
         </div>
         
         {% if error %}
-            <p class="error">{{ error }}</p>
+            <div class="error">{{ error }}</div>
         {% endif %}
 
-        <form method="POST" action="/">
-            <div class="form-group">
-                <label for="consulta">Describe lo que quieres ver (Ej: "Películas de viajes en el tiempo con un toque de comedia")</label>
-                <input type="text" id="consulta" name="consulta" value="{{ consulta_buscada or '' }}" required>
-            </div>
-
-            <div class="form-group">
-                <label>Idioma de Búsqueda</label>
-                <div class="radio-group">
-                    <label>
-                        <input type="radio" name="idioma" value="en" {% if idioma_seleccionado == 'en' %}checked{% endif %}> 
-                        Inglés
-                    </label>
-                    <label>
-                        <input type="radio" name="idioma" value="es" {% if idioma_seleccionado == 'es' %}checked{% endif %}> 
-                        Español
-                    </label>
+        <div class="search-panel">
+            <form method="POST" action="/">
+                <div class="form-group">
+                    <label for="consulta">¿Qué te apetece ver hoy?</label>
+                    <input type="text" id="consulta" name="consulta" 
+                           placeholder="Ej: Película de ciencia ficción psicológica con final inesperado" 
+                           value="{{ consulta_buscada or '' }}" required autocomplete="off">
                 </div>
-            </div>
-            
-            <div class="form-group">
-                <label for="num_recs">Número de Recomendaciones (1-10)</label>
-                <input type="number" id="num_recs" name="num_recs" min="1" max="10" value="{{ num_recs or 5 }}" required>
-            </div>
-            
-            <button type="submit">BUSCAR RECOMENDACIONES</button>
-        </form>
+
+                <div class="form-group">
+                    <label>Idioma de los resultados</label>
+                    <div class="radio-group">
+                        <input type="radio" id="lang_en" name="idioma" value="en" {% if idioma_seleccionado == 'en' %}checked{% endif %}>
+                        <label for="lang_en">Inglés (English)</label>
+
+                        <input type="radio" id="lang_es" name="idioma" value="es" {% if idioma_seleccionado == 'es' %}checked{% endif %}>
+                        <label for="lang_es">Español</label>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="num_recs">Número de Títulos (1-10)</label>
+                    <input type="number" id="num_recs" name="num_recs" min="1" max="10" value="{{ num_recs or 5 }}" required>
+                </div>
+                
+                <button type="submit">Buscar Recomendaciones</button>
+            </form>
+        </div>
 
         {% if recomendaciones %}
-            <div class="results">
-                <h2>Resultados para "{{ consulta_buscada }}" en idioma "{{ idioma_seleccionado }}"</h2>
+            <div class="results" id="resultados">
+                <div class="results-header">
+                    <h2>Resultados encontrados</h2>
+                    <span style="color: #666; font-size: 0.9em;">Basado en "{{ consulta_buscada }}"</span>
+                </div>
+
                 {% for rec in recomendaciones %}
-                    <div class="suggestion">
-                        <div class="title">{{ rec.title }} ({{ rec.release_year }})</div>
+                    <article class="suggestion">
+                        <div class="suggestion-header">
+                            <div class="title">{{ rec.title }} <span style="font-weight:400; color:#888; margin-left:10px; font-size:0.8em;">{{ rec.release_year }}</span></div>
+                        </div>
                         
-                        <div class="metadata">
-                            <div>
-                                <strong>TIPO</strong>
-                                <span>{{ rec.type }}</span>
+                        <div class="suggestion-body">
+                            <div class="metadata">
+                                <div class="meta-item">
+                                    <strong>Tipo</strong>
+                                    <span>{{ rec.type }}</span>
+                                </div>
+                                <div class="meta-item">
+                                    <strong>Duración</strong>
+                                    <span>{{ rec.duration | default('N/A', True) }}</span>
+                                </div>
+                                <div class="meta-item">
+                                    <strong>Director</strong>
+                                    <span>{{ rec.director | default('N/A', True) }}</span>
+                                </div>
+                                <div class="meta-item">
+                                    <strong>Elenco</strong>
+                                    <span>{{ rec.cast | default('Varios', True) }}</span>
+                                </div>
                             </div>
-                            <div>
-                                <strong>DURACIÓN</strong>
-                                <span>{{ rec.duration | default('N/A', True) }}</span>
-                            </div>
-                            <div>
-                                <strong>DIRECTOR</strong>
-                                <span>{{ rec.director | default('N/A', True) }}</span>
-                            </div>
-                        </div>
 
-                        <div class="metadata">
-                             <div>
-                                <strong>ELENCO PRINCIPAL</strong>
-                                <span>{{ rec.cast | default('N/A', True) }}</span>
+                            <div class="synopsis">
+                                <strong>Sinopsis</strong>
+                                <p>{{ rec.description }}</p>
                             </div>
                         </div>
-
-                        <div class="description-text">
-                            <strong>SINOPSIS</strong>
-                            <p>{{ rec.description }}</p>
-                        </div>
-                    </div>
+                    </article>
                 {% endfor %}
             </div>
         {% endif %}
+    </main>
 
-    </div>
+    <footer>
+        <p>Proyecto Personal de Investigación y Desarrollo</p>
+        <p>
+            Desarrollado por <a href="https://cs.iflorido.es" target="_blank" class="footer-brand">Ignacio Florido</a>
+        </p>
+        <p style="font-size: 0.8em; margin-top: 15px;">
+            <a href="https://github.com/iflorido/recomendaciones-peliculas-Flask" target="_blank">Ver código en GitHub</a> | 
+            <a href="https://automaworks.es" target="_blank">Automaworks.es</a>
+        </p>
+        <p style="font-size: 0.7em; margin-top: 20px; opacity: 0.5;">
+            Este sitio es un proyecto educativo y no está afiliado ni respaldado por Netflix, Inc.
+        </p>
+    </footer>
+
 </body>
 </html>
