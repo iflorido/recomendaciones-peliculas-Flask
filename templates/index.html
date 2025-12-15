@@ -347,12 +347,22 @@
         }
     </style>
 </head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-0FZQBN4W44"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-0FZQBN4W44');
+</script>
 <body>
 
     <main>
         <div class="header">
-            <h1><span>NETFLIX</span> Semantic.</h1>
+            <h1><span>NETFLIX</span>Semantic Recommender.</h1>
             <p>Descubre qué ver usando Inteligencia Artificial.</p>
+           <p> Sistema de Recomendación basado en Contenido de Netflix con Búsqueda Semántica y NLP.</p>
         </div>
         
         {% if error %}
@@ -441,8 +451,8 @@
             <a href="https://github.com/iflorido/recomendaciones-peliculas-Flask" target="_blank">Ver código en GitHub</a> | 
             <a href="https://automaworks.es" target="_blank">Automaworks.es</a>
         </p>
-        <p style="font-size: 0.7em; margin-top: 20px; opacity: 0.5;">
-            Este sitio es un proyecto educativo y no está afiliado ni respaldado por Netflix, Inc.
+        <p style="font-size: 0.7em; margin-top: 20px; opacity: 0.9;">
+            Este sitio es un proyecto educativo en Python y no está afiliado ni respaldado por Netflix, Inc.
         </p>
     </footer>
 
